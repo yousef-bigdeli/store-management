@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useProduct } from "../context/ProductProvider";
 
 const ProductList = () => {
-  const [products, setProducts] = useState([
-    { id: 1, name: "Milk", category: "dairy" },
-  ]);
+  const products = useProduct();
 
-  return ( 
+  return (
     <div>
       <h2>Product List</h2>
       <table>
