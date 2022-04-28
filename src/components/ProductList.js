@@ -5,7 +5,7 @@ const ProductList = () => {
   const products = useProduct();
 
   return (
-    <div className="product-list">
+    <section className="flex-column">
       <h2>Product List</h2>
       <table className="product-table">
         <thead>
@@ -36,7 +36,7 @@ const ProductList = () => {
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   );
 };
 

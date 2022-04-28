@@ -5,12 +5,12 @@ import "./StoreManagmentApp.css";
 
 const StoreManagementApp = () => {
   return (
-    <div className="container">
+    <main className="container">
       <ProductProvider>
         <ProductForm />
         <ProductList />
       </ProductProvider>
-    </div>
+    </main>
   );
 };
 
