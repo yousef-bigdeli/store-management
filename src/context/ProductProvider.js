@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer } from "react";
 
-const productsData = [{ id: 1, name: "Milk", category: "dairy" }];
+const productsData = [{ id: 1, name: "Milk", category: "dairy", quantity: 1 }];
 
 const ProductContext = createContext();
 const ProductContextDispatcher = createContext();
