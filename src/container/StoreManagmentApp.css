@@ -48,6 +48,7 @@ th {
 
 .product-table__body td:last-child {
   width: 10%;
+  min-width: 90px;
 }
 
 .product-table__btn {
@@ -75,7 +76,7 @@ th {
   margin-bottom: 32px;
 }
 
-.product-form input {
+.form-input {
   width: 90%;
   margin-bottom: 8px;
   border: 1px solid #cccccc;
@@ -106,6 +107,7 @@ label {
   margin-left: 4px;
   color: #16a34a;
   cursor: pointer;
+  outline: none;
 }
 
 .submit-btn{

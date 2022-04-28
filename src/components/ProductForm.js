@@ -1,14 +1,20 @@
 import { useState } from "react";
 import Select from "react-select";
 import { AiFillPlusCircle } from "react-icons/ai";
+import CategoryForm from "./CategoryForm/CategoryForm";
 
 const options = [{ value: "dairy", label: "dairy" }];
 
 const ProductForm = () => {
   const [selectedOption, setSelectedOption] = useState(null);
+  const [isShowModal, setIsShowModal] = useState(false);
 
   const handleChange = (selectValue) => {
     setSelectedOption(selectValue);
+  };
+
+  const handleModal = () => {
+    setIsShowModal((prevState) => !prevState);
   };
 
   return (
@@ -16,7 +22,7 @@ const ProductForm = () => {
       <h2>Add new product</h2>
       <form className="product-form">
         <label htmlFor="name">Name</label>
-        <input type="text" id="name" />
+        <input type="text" id="name" className='form-input'/>
         <label htmlFor="cat">category</label>
         <div className="category">
           <Select
@@ -24,16 +30,25 @@ const ProductForm = () => {
             onChange={handleChange}
             options={options}
             id="cat"
-            className='category__select'
+            className="category__select"
           />
-          <button className='add-btn' type='button'>
+          <button
+            className="add-btn"
+            type="button"
+            onClick={() => setIsShowModal(true)}
+          >
             <AiFillPlusCircle />
           </button>
         </div>
         <label htmlFor="quantity">Quantity</label>
-        <input type="number" id="quantity" />
-        <button type="submit" className='submit-btn'>Add Product</button>
+        <input type="number" id="quantity" className='form-input'/>
+        <button type="submit" className="submit-btn">
+          Add Product
+        </button>
       </form>
+      {isShowModal && (
+        <CategoryForm isShowModal={isShowModal} handleModal={handleModal} />
+      )}
     </section>
   );
 };
