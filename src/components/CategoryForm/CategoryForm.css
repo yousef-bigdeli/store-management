@@ -38,6 +38,15 @@
   margin-top: 4px;
 }
 
+.cancel-btn{
+  border: 1px solid #b4b4b4;
+  background-color: unset;
+  border-radius: 4px;
+  padding: 8px;
+  color: #797979;
+  cursor: pointer;
+}
+
 .show {
   -webkit-animation: slide-in-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   animation: slide-in-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;

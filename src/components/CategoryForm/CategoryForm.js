@@ -28,7 +28,7 @@ const CategoryForm = ({ isShowModal, handleModal }) => {
     return () => {
       document.body.removeEventListener("keydown", keyDownHandler);
     };
-  }, []);
+  });
 
   // Category form handler for Add new one and update them
   const formSubmitHandler = (e) => {
