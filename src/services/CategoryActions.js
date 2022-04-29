@@ -22,7 +22,21 @@ const updateCategory = (id, title) => {
   localStorage.setItem("categories", JSON.stringify(categories));
 };
 
-export { getAllCategories, setNewCategory, deleteCategory, updateCategory };
+const getAllCategoryOptions = () => {
+  const categories = localStorage.getItem("categories")
+    ? JSON.parse(localStorage.getItem("categories"))
+    : [];
+
+  return categories.map(({ title }) => ({ value: title, label: title }));
+};
+
+export {
+  getAllCategories,
+  setNewCategory,
+  deleteCategory,
+  updateCategory,
+  getAllCategoryOptions,
+};
 
 // check out the categories from local storage
 const getStorage = () => {

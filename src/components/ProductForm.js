@@ -2,19 +2,20 @@ import { useState } from "react";
 import Select from "react-select";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CategoryForm from "./CategoryForm/CategoryForm";
-
-const options = [{ value: "dairy", label: "dairy" }];
+import { getAllCategoryOptions } from "../services/CategoryActions";
 
 const ProductForm = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [isShowModal, setIsShowModal] = useState(false);
-
+  const [options, setOptions] = useState(getAllCategoryOptions());
+  
   const handleChange = (selectValue) => {
     setSelectedOption(selectValue);
   };
 
   const handleModal = () => {
     setIsShowModal((prevState) => !prevState);
+    setOptions(getAllCategoryOptions());
   };
 
   return (
@@ -22,7 +23,7 @@ const ProductForm = () => {
       <h2>Add new product</h2>
       <form className="product-form">
         <label htmlFor="name">Name</label>
-        <input type="text" id="name" className='form-input'/>
+        <input type="text" id="name" className="form-input" />
         <label htmlFor="cat">category</label>
         <div className="category">
           <Select
@@ -41,7 +42,7 @@ const ProductForm = () => {
           </button>
         </div>
         <label htmlFor="quantity">Quantity</label>
-        <input type="number" id="quantity" className='form-input'/>
+        <input type="number" id="quantity" className="form-input" />
         <button type="submit" className="submit-btn">
           Add Product
         </button>
