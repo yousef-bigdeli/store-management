@@ -68,7 +68,8 @@ th {
 }
 
 .product-form {
-  width: 400px;
+  width: 40%;
+  min-width: 350px;
   display: flex;
   flex-direction: column;
   justify-content: center;
