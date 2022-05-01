@@ -1,4 +1,10 @@
-import { createContext, useContext, useReducer, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import {
   getAllProducts,
   setNewProduct,
@@ -6,7 +12,7 @@ import {
   updateProduct,
 } from "../services/ProductActions";
 
-const productsData = getAllProducts();
+let productsData = getAllProducts();
 
 const ProductContext = createContext();
 const ProductContextDispatcher = createContext();
@@ -36,6 +42,10 @@ const reducer = (products, { type, data }) => {
       updateProduct(data);
       return getAllProducts();
     }
+    case "search": {
+      const title = data.title;
+      return allProducts.filter((item) => item.name.includes(title));
+    }
 
     default:
       return products;
@@ -45,6 +55,11 @@ const reducer = (products, { type, data }) => {
 const ProductProvider = ({ children }) => {
   const [product, dispatcher] = useReducer(reducer, productsData);
   const [editId, setEditId] = useState(0);
+
+  useEffect(() => {
+    productsData = getAllProducts(); // Update new product
+  }, [product]);
+
   return (
     <ProductContext.Provider value={product}>
       <ProductContextDispatcher.Provider value={dispatcher}>
@@ -63,4 +78,3 @@ export const useProduct = () => useContext(ProductContext);
 export const useProductDispatcher = () => useContext(ProductContextDispatcher);
 export const useProductEdit = () => useContext(ProductEditContext);
 export const useProductSetEdit = () => useContext(ProductSetEditContext);
-
