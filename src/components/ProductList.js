@@ -4,6 +4,7 @@ import {
   useProductSetEdit,
 } from "../context/ProductProvider";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import SearchProducts from './SearchProducts';
 
 const ProductList = () => {
   const products = useProduct();
@@ -19,6 +20,7 @@ const ProductList = () => {
   return (
     <section className="flex-column">
       <h2>Product List</h2>
+      <SearchProducts />
       <table className="product-table">
         <thead>
           <tr className="product-table__head">
