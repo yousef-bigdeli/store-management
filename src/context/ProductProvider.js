@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import { createContext, useContext, useReducer } from "react";
 import {
   getAllProducts,
   setNewProduct,
@@ -12,62 +6,65 @@ import {
   updateProduct,
 } from "../services/ProductActions";
 
-let productsData = getAllProducts();
+const initialState = {
+  products: getAllProducts(),
+  editId: 0,
+};
 
 const ProductContext = createContext();
 const ProductContextDispatcher = createContext();
-const ProductEditContext = createContext();
-const ProductSetEditContext = createContext();
 
-const reducer = (products, { type, data }) => {
-  const allProducts = [...productsData];
-
+const reducer = (state, { type, data }) => {
   switch (type) {
     case "setProduct": {
-      const id =
-        products.reduce(
+      const newId =
+        state.products.reduce(
           (maxId, item) => (maxId > item.id ? maxId : item.id),
           0
         ) + 1;
-      const newProduct = { id, ...data };
-      allProducts.push(newProduct);
-      setNewProduct(allProducts);
-      return getAllProducts();
+      setNewProduct([
+        ...state.products,
+        { id: newId, ...data, category: data.category.value },
+      ]);
+      return { ...state, products: getAllProducts() };
     }
+
     case "deleteProduct": {
       deleteProduct(data.id);
-      return getAllProducts();
+      return { ...state, products: getAllProducts() };
     }
+
+    case "setEditId": {
+      // To put an item into the product form when the user wants to edit it (set product id in the state)
+      return { ...state, editId: data.id };
+    }
+
     case "editProduct": {
-      updateProduct(data);
-      return getAllProducts();
+      updateProduct({ ...data, category: data.category.value });
+      return { products: getAllProducts(), editId: 0 };
     }
+
     case "search": {
-      const title = data.title;
-      return allProducts.filter((item) => item.name.includes(title));
+      return {
+        ...state,
+        products: getAllProducts().filter((item) =>
+          item.name.includes(data.title)
+        ),
+      };
     }
 
     default:
-      return products;
+      return state;
   }
 };
 
 const ProductProvider = ({ children }) => {
-  const [product, dispatcher] = useReducer(reducer, productsData);
-  const [editId, setEditId] = useState(0);
-
-  useEffect(() => {
-    productsData = getAllProducts(); // Update new product
-  }, [product]);
+  const [product, dispatcher] = useReducer(reducer, initialState);
 
   return (
     <ProductContext.Provider value={product}>
       <ProductContextDispatcher.Provider value={dispatcher}>
-        <ProductEditContext.Provider value={editId}>
-          <ProductSetEditContext.Provider value={setEditId}>
-            {children}
-          </ProductSetEditContext.Provider>
-        </ProductEditContext.Provider>
+        {children}
       </ProductContextDispatcher.Provider>
     </ProductContext.Provider>
   );
@@ -76,5 +73,3 @@ const ProductProvider = ({ children }) => {
 export default ProductProvider;
 export const useProduct = () => useContext(ProductContext);
 export const useProductDispatcher = () => useContext(ProductContextDispatcher);
-export const useProductEdit = () => useContext(ProductEditContext);
-export const useProductSetEdit = () => useContext(ProductSetEditContext);

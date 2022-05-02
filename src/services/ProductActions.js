@@ -15,7 +15,6 @@ const deleteProduct = (id) => {
 };
 
 const updateProduct = (data) => {
-  console.log(data);
   const products = getAllProducts().map((item) =>
     item.id === data.id ? data : item
   );
@@ -23,7 +22,7 @@ const updateProduct = (data) => {
 };
 
 const getProductById = (id) => {
-  return getAllProducts().filter((item) => item.id === id);
+  return getAllProducts().find((item) => item.id === id);
 };
 
 export {

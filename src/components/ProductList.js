@@ -1,19 +1,13 @@
-import {
-  useProduct,
-  useProductDispatcher,
-  useProductSetEdit,
-} from "../context/ProductProvider";
+import { useProduct, useProductDispatcher } from "../context/ProductProvider";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import SearchProducts from './SearchProducts';
+import SearchProducts from "./SearchProducts";
 
 const ProductList = () => {
-  const products = useProduct();
+  const products = useProduct().products;
   const productDispatch = useProductDispatcher();
-  const setEditId = useProductSetEdit();
 
-  const deleteHandler = (id) => {
-    const data = { id };
-    const action = { type: "deleteProduct", data };
+  const productChangesHandler = (e, id) => {
+    const action = { type: e.currentTarget.id, data: { id } };
     productDispatch(action);
   };
 
@@ -21,6 +15,7 @@ const ProductList = () => {
     <section className="flex-column">
       <h2>Product List</h2>
       <SearchProducts />
+      {/* TODO: Add sort and filter by category */}
       <table className="product-table">
         <thead>
           <tr className="product-table__head">
@@ -41,13 +36,15 @@ const ProductList = () => {
               <td>
                 <button
                   className="product-table__btn edit"
-                  onClick={() => setEditId(item.id)}
+                  id="setEditId"
+                  onClick={(e) => productChangesHandler(e, item.id)}
                 >
                   <AiFillEdit />
                 </button>
                 <button
                   className="product-table__btn delete"
-                  onClick={() => deleteHandler(item.id)}
+                  id="deleteProduct"
+                  onClick={(e) => productChangesHandler(e, item.id)}
                 >
                   <AiFillDelete />
                 </button>

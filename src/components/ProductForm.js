@@ -3,85 +3,84 @@ import Select from "react-select";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CategoryForm from "./CategoryForm/CategoryForm";
 import { getAllCategoryOptions } from "../services/CategoryActions";
-import {
-  useProductDispatcher,
-  useProductEdit,
-  useProductSetEdit,
-} from "../context/ProductProvider";
+import { useProduct, useProductDispatcher } from "../context/ProductProvider";
 import { getProductById } from "../services/ProductActions";
 
-const ProductForm = () => {
-  const [product, setProduct] = useState({ name: "", quantity: 0 });
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [isShowModal, setIsShowModal] = useState(false);
-  const [options, setOptions] = useState(getAllCategoryOptions());
-  const productDispatch = useProductDispatcher();
-  const editId = useProductEdit();
-  const setEditId = useProductSetEdit();
-  const nameRef = useRef();
+const initialProduct = {
+  name: "",
+  quantity: 0,
+  category: { value: "", label: "" },
+};
 
-  const handleInputChanges = (e) => {
+const ProductForm = () => {
+  const [product, setProduct] = useState(initialProduct);
+  const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
+  const [options, setOptions] = useState(getAllCategoryOptions()); // Get From localstorage
+  const productEditId = useProduct().editId;
+  const productDispatch = useProductDispatcher();
+  const nameInputRef = useRef();
+
+  const changeInputHandler = (e) => {
     setProduct((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSelectChanges = (selectedValue) => {
-    setSelectedOption(selectedValue);
+  const changeSelectHandler = (selectedValue) => {
+    setProduct({ ...product, category: selectedValue });
   };
 
-  const handleModal = () => {
+  const showModalHandler = () => {
     setIsShowModal((prevState) => !prevState);
     setOptions(getAllCategoryOptions());
   };
 
-  const productSubmitHandler = (e) => {
+  const formSubmitHandler = (e) => {
     e.preventDefault();
-    const data =
-      editId > 0
-        ? { ...product, category: selectedOption.value, id: editId }
-        : { ...product, category: selectedOption.value };
-    let action =
-      editId > 0 ? { type: "editProduct", data } : { type: "setProduct", data };
+    const action = productEditId
+      ? { type: "editProduct", data: { ...product, id: productEditId } }
+      : { type: "setProduct", data: { ...product } };
     productDispatch(action);
-    setProduct({ name: "", quantity: 0 });
-    setSelectedOption(null);
-    setEditId(0);
-    nameRef.current.focus();
+    setProduct(initialProduct);
+    nameInputRef.current.focus();
   };
 
   useEffect(() => {
-    if (editId > 0) {
-      const data = getProductById(editId)[0];
-      setProduct({ name: data.name, quantity: data.quantity });
-      setSelectedOption({ value: data.category, label: data.category });
+    if (productEditId > 0) {
+      const { name, quantity, category } = getProductById(productEditId);
+      setProduct({
+        name: name,
+        quantity: quantity,
+        category: { value: category, label: category },
+      });
     }
-  }, [editId]);
+  }, [productEditId]);
 
   return (
     <section className="flex-column">
       <h2>Add new product</h2>
-      <form className="product-form" onSubmit={productSubmitHandler}>
+      <form className="product-form" onSubmit={formSubmitHandler}>
         <label htmlFor="name">Name</label>
         <input
           type="text"
           id="name"
           name="name"
           className="form-input"
-          onChange={(e) => handleInputChanges(e)}
+          onChange={(e) => changeInputHandler(e)}
           value={product.name}
-          ref={nameRef}
+          ref={nameInputRef}
         />
         <label htmlFor="cat">category</label>
         <div className="category">
           <Select
-            value={selectedOption}
-            onChange={handleSelectChanges}
+            value={product.category}
+            onChange={changeSelectHandler}
             options={options}
             id="cat"
             className="category__select"
           />
+          {/* Button for show modal */}
           <button
             className="add-btn"
             type="button"
@@ -96,15 +95,31 @@ const ProductForm = () => {
           id="quantity"
           name="quantity"
           className="form-input"
-          onChange={(e) => handleInputChanges(e)}
+          onChange={(e) => changeInputHandler(e)}
           value={product.quantity}
         />
         <button type="submit" className="submit-btn">
-          Add Product
+          {productEditId ? "Update prodcut" : "Add product"}
         </button>
+        {productEditId > 0 && (
+          <button
+            type="button"
+            className="cancel-btn"
+            onClick={() => {
+              setProduct(initialProduct);
+              productDispatch({ type: "setEditId", data: { id: 0 } });
+            }}
+            style={{ width: "90%", marginTop: "8px" }}
+          >
+            Cancel
+          </button>
+        )}
       </form>
       {isShowModal && (
-        <CategoryForm isShowModal={isShowModal} handleModal={handleModal} />
+        <CategoryForm
+          isShowModal={isShowModal}
+          showModalHandler={showModalHandler}
+        />
       )}
     </section>
   );
