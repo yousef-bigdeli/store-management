@@ -8,7 +8,7 @@ import {
 } from "../../services/CategoryActions";
 import "./CategoryForm.css";
 
-const CategoryForm = ({ isShowModal, handleModal }) => {
+const CategoryForm = ({ isShowModal, showModalHandler }) => {
   const [categories, setCategories] = useState(getAllCategories()); // for show on list
   const [title, setTitle] = useState("");
   const [editMode, setEditMode] = useState({ isEdit: false, id: 0 });
@@ -17,7 +17,7 @@ const CategoryForm = ({ isShowModal, handleModal }) => {
   // When user press ESC key, modal hide
   const keyDownHandler = (e) => {
     if ((e.keyCode || e.charCode) === 27) {
-      handleModal();
+      showModalHandler();
     }
   };
 
@@ -60,7 +60,7 @@ const CategoryForm = ({ isShowModal, handleModal }) => {
   return (
     <div
       className="modal"
-      onClick={(e) => e.target.classList.contains("modal") && handleModal()}
+      onClick={(e) => e.target.classList.contains("modal") && showModalHandler()}
     >
       <div
         className={`modal-content ${isShowModal ? "show" : ""}`}
