@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import {
   AiFillEdit,
   AiFillDelete,
-  AiOutlineCloseCircle,
   AiOutlineClose,
 } from "react-icons/ai";
 import {
