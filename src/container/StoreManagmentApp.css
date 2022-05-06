@@ -78,7 +78,7 @@ th {
 }
 
 .form-input {
-  width: 90%;
+  width: 100%;
   margin-bottom: 8px;
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -93,7 +93,7 @@ th {
   margin-bottom: 8px;
 }
 .category__select {
-  width: 90%;
+  width: 100%;
 }
 
 label {
@@ -112,7 +112,7 @@ label {
 }
 
 .submit-btn{
-  width: 90%;
+  width: 100%;
   border: 0;
   background-color: #4f46e5;
   color: #fff;
@@ -128,4 +128,13 @@ label {
 .search-wrapper{
   width: 50%;
   margin: 1rem 0;
+}
+
+.cancel-btn{
+  border: 1px solid #b4b4b4;
+  background-color: unset;
+  border-radius: 4px;
+  padding: 8px;
+  color: #797979;
+  cursor: pointer;
 }
