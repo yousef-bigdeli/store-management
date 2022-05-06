@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-// import { AiFillPlusCircle } from "react-icons/ai";
-// import CategoryForm from "./CategoryForm/CategoryForm";
+import { AiFillPlusCircle } from "react-icons/ai";
+import CategoryForm from "./CategoryForm/CategoryForm";
 import { getAllCategoryOptions } from "../services/CategoryActions";
 import { useProduct, useProductDispatcher } from "../context/ProductProvider";
 import { getProductById } from "../services/ProductActions";
@@ -14,7 +14,7 @@ const initialProduct = {
 
 const ProductForm = () => {
   const [product, setProduct] = useState(initialProduct);
-  // const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
+  const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
   const [options, setOptions] = useState(getAllCategoryOptions()); // Get From localstorage
   const productEditId = useProduct().editId;
   const productDispatch = useProductDispatcher();
@@ -31,10 +31,10 @@ const ProductForm = () => {
     setProduct({ ...product, category: selectedValue });
   };
 
-  // const showModalHandler = () => {
-  //   setIsShowModal((prevState) => !prevState);
-  //   setOptions(getAllCategoryOptions());
-  // };
+  const showModalHandler = () => {
+    setIsShowModal((prevState) => !prevState);
+    setOptions(getAllCategoryOptions());
+  };
 
   const formSubmitHandler = (e) => {
     e.preventDefault();
@@ -80,14 +80,14 @@ const ProductForm = () => {
             id="cat"
             className="category__select"
           />
-          {/* Button for show modal
+          {/* Button for show modal */}
           <button
             className="add-btn"
             type="button"
             onClick={() => setIsShowModal(true)}
           >
             <AiFillPlusCircle />
-          </button> */}
+          </button>
         </div>
         <label htmlFor="quantity">Quantity</label>
         <input
@@ -115,12 +115,12 @@ const ProductForm = () => {
           </button>
         )}
       </form>
-      {/* {isShowModal && (
+      {isShowModal && (
         <CategoryForm
           isShowModal={isShowModal}
           showModalHandler={showModalHandler}
         />
-      )} */}
+      )}
     </section>
   );
 };

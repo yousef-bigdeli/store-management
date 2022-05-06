@@ -38,7 +38,17 @@
   margin-top: 4px;
 }
 
+.close-modal{
+  border: 0;
+  background-color: unset;
+  cursor: pointer;
+  position: absolute;
+  font-size: 1.1rem;
+}
 
+.close-modal:hover{
+  color: #dc2626;
+}
 
 .show {
   -webkit-animation: slide-in-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;

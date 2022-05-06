@@ -78,7 +78,7 @@ th {
 }
 
 .form-input {
-  width: 100%;
+  width: 90%;
   margin-bottom: 8px;
   border: 1px solid #cccccc;
   border-radius: 4px;
@@ -93,7 +93,7 @@ th {
   margin-bottom: 8px;
 }
 .category__select {
-  width: 100%;
+  width: 90%;
 }
 
 label {
@@ -112,7 +112,7 @@ label {
 }
 
 .submit-btn{
-  width: 100%;
+  width: 90%;
   border: 0;
   background-color: #4f46e5;
   color: #fff;

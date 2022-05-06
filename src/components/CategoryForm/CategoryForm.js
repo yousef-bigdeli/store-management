@@ -1,5 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
+import {
+  AiFillEdit,
+  AiFillDelete,
+  AiOutlineCloseCircle,
+  AiOutlineClose,
+} from "react-icons/ai";
 import {
   getAllCategories,
   setNewCategory,
@@ -60,13 +65,18 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
   return (
     <div
       className="modal"
-      onClick={(e) => e.target.classList.contains("modal") && showModalHandler()}
+      onClick={(e) =>
+        e.target.classList.contains("modal") && showModalHandler()
+      }
     >
       <div
         className={`modal-content ${isShowModal ? "show" : ""}`}
         onCanPlay={(e) => e.stopPropagation()}
       >
         {/* New category form */}
+        <button className="close-modal" onClick={() => showModalHandler()}>
+          <AiOutlineClose />
+        </button>
         <div className="modal-header">
           <h3>Add new category</h3>
         </div>
