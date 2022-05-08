@@ -48,7 +48,7 @@ const reducer = (state, { type, data }) => {
       return {
         ...state,
         products: getAllProducts().filter((item) =>
-          item.name.includes(data.title)
+          item.name.toLowerCase().includes(data.title.toLowerCase())
         ),
       };
     }
