@@ -1,9 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import {
-  AiFillEdit,
-  AiFillDelete,
-  AiOutlineClose,
-} from "react-icons/ai";
+import { AiFillEdit, AiFillDelete, AiOutlineClose } from "react-icons/ai";
 import {
   getAllCategories,
   setNewCategory,
@@ -13,9 +9,11 @@ import {
 import "./CategoryForm.css";
 
 const CategoryForm = ({ isShowModal, showModalHandler }) => {
-  const [categories, setCategories] = useState(getAllCategories()); // for show on list
+  const [categories, setCategories] = useState({
+    data: getAllCategories(),
+    editId: 0,
+  });
   const [title, setTitle] = useState("");
-  const [editMode, setEditMode] = useState({ isEdit: false, id: 0 });
   const inputRef = useRef();
 
   // When user press ESC key, modal hide
@@ -37,12 +35,12 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
   // Category form handler for Add new one and update them
   const formSubmitHandler = (e) => {
     e.preventDefault();
-    if (editMode.isEdit) {
-      updateCategory(editMode.id, title);
+    if (categories.editId) {
+      updateCategory(categories.editId, title);
     } else {
       if (title) {
         const id =
-          categories.reduce(
+          categories.data.reduce(
             (maxId, item) => (maxId > item.id ? maxId : item.id),
             0
           ) + 1;
@@ -51,14 +49,13 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
     }
 
     setTitle("");
-    setEditMode({ isEdit: false, id: 0 });
-    setCategories(getAllCategories());
+    setCategories({ data: getAllCategories(), editId: 0 });
   };
 
   // Delete
   const deleteCategoryHandler = (id) => {
     deleteCategory(id);
-    setCategories(getAllCategories());
+    setCategories({ data: getAllCategories(), editId: 0 });
   };
 
   return (
@@ -91,15 +88,15 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
               ref={inputRef}
             />
             <button type="submit" className="submit-btn">
-              {editMode.isEdit ? "Update" : "Add"}
+              {categories.editId ? "Update" : "Add"}
             </button>
-            {editMode.isEdit && (
+            {categories.editId > 0 && (
               <button
                 type="button"
                 className="cancel-btn"
                 onClick={() => {
                   setTitle("");
-                  setEditMode({ isEdit: false, id: 0 });
+                  setCategories({ ...categories, editId: 0 });
                 }}
               >
                 Cancel
@@ -121,7 +118,7 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
               </tr>
             </thead>
             <tbody>
-              {categories.map(({ title, id }, index) => (
+              {categories.data.map(({ title, id }, index) => (
                 <tr className="product-table__body" key={id}>
                   <td>{index + 1}</td>
                   <td>{title}</td>
@@ -129,7 +126,7 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
                     <button
                       className="product-table__btn edit"
                       onClick={() => {
-                        setEditMode({ isEdit: true, id });
+                        setCategories({ ...categories, editId: id });
                         setTitle(title);
                         inputRef.current.focus();
                       }}
