@@ -1,20 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { AiFillEdit, AiFillDelete, AiOutlineClose } from "react-icons/ai";
-import {
-  getAllCategories,
-  setNewCategory,
-  deleteCategory,
-  updateCategory,
-} from "../../services/CategoryActions";
 import "./CategoryForm.css";
 
 const CategoryForm = ({ isShowModal, showModalHandler }) => {
   const [categories, setCategories] = useState({
-    data: getAllCategories(),
+    data: [],
     editId: 0,
   });
   const [title, setTitle] = useState("");
   const inputRef = useRef();
+  const didMount = useRef(false);
 
   // When user press ESC key, modal hide
   const keyDownHandler = (e) => {
@@ -36,7 +31,10 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
   const formSubmitHandler = (e) => {
     e.preventDefault();
     if (categories.editId) {
-      updateCategory(categories.editId, title);
+      const editedData = categories.data.map((item) =>
+        item.id === categories.editId ? { ...item, title } : item
+      );
+      setCategories({ editId: 0, data: editedData });
     } else {
       if (title) {
         const id =
@@ -44,19 +42,33 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
             (maxId, item) => (maxId > item.id ? maxId : item.id),
             0
           ) + 1;
-        setNewCategory({ id, title });
+        setCategories({
+          editId: 0,
+          data: [...categories.data, { id, title }],
+        });
       }
     }
-
     setTitle("");
-    setCategories({ data: getAllCategories(), editId: 0 });
   };
 
   // Delete
   const deleteCategoryHandler = (id) => {
-    deleteCategory(id);
-    setCategories({ data: getAllCategories(), editId: 0 });
+    const newData = categories.data.filter((item) => item.id !== id);
+    setCategories({ editId: 0, data: newData });
   };
+
+  // get and set data to local storage
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      const localData = localStorage.getItem("categories")
+        ? JSON.parse(localStorage.getItem("categories"))
+        : [];
+      setCategories({ data: localData, editId: 0 });
+    } else {
+      localStorage.setItem("categories", JSON.stringify(categories.data));
+    }
+  }, [categories]);
 
   return (
     <div
