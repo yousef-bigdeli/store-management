@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CategoryForm from "./CategoryForm/CategoryForm";
-import { getAllCategoryOptions } from "../services/CategoryActions";
 import { useProduct, useProductDispatcher } from "../context/ProductProvider";
 import { getProductById } from "../services/ProductActions";
 
@@ -10,6 +9,13 @@ const initialProduct = {
   name: "",
   quantity: 0,
   category: { value: "", label: "" },
+};
+const getAllCategoryOptions = () => {
+  const categories = localStorage.getItem("categories")
+    ? JSON.parse(localStorage.getItem("categories"))
+    : [];
+
+  return categories.map(({ title }) => ({ value: title, label: title }));
 };
 
 const ProductForm = () => {
