@@ -3,10 +3,7 @@ import { AiFillEdit, AiFillDelete, AiOutlineClose } from "react-icons/ai";
 import "./CategoryForm.css";
 
 const CategoryForm = ({ isShowModal, showModalHandler }) => {
-  const [categories, setCategories] = useState({
-    data: [],
-    editId: 0,
-  });
+  const [categories, setCategories] = useState({});
   const [title, setTitle] = useState("");
   const inputRef = useRef();
   const didMount = useRef(false);
@@ -19,13 +16,13 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
   };
 
   // close modal after clicking out
-  useEffect(() => {
-    document.body.addEventListener("keydown", keyDownHandler);
+  // useEffect(() => {
+  //   document.body.addEventListener("keydown", keyDownHandler);
 
-    return () => {
-      document.body.removeEventListener("keydown", keyDownHandler);
-    };
-  });
+  //   return () => {
+  //     document.body.removeEventListener("keydown", keyDownHandler);
+  //   };
+  // });
 
   // Category form handler for Add new one and update them
   const formSubmitHandler = (e) => {
@@ -58,17 +55,25 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
   };
 
   // get and set data to local storage
+  // useEffect(() => {
+  //   if (!didMount.current) {
+  //     didMount.current = true;
+  //     const localData = localStorage.getItem("categories")
+  //       ? JSON.parse(localStorage.getItem("categories"))
+  //       : [];
+  //     setCategories({ data: localData, editId: 0 });
+  //   } else {
+  //     localStorage.setItem("categories", JSON.stringify(categories.data));
+  //   }
+  // }, [categories]);
+
   useEffect(() => {
-    if (!didMount.current) {
-      didMount.current = true;
-      const localData = localStorage.getItem("categories")
-        ? JSON.parse(localStorage.getItem("categories"))
-        : [];
-      setCategories({ data: localData, editId: 0 });
-    } else {
-      localStorage.setItem("categories", JSON.stringify(categories.data));
-    }
-  }, [categories]);
+    const localData = localStorage.getItem("categories")
+      ? JSON.parse(localStorage.getItem("categories"))
+      : [];
+    console.log(categories);
+    // setCategories({ data: localData, editId: 0 });
+  }, []);
 
   return (
     <div
@@ -130,30 +135,32 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
               </tr>
             </thead>
             <tbody>
-              {categories.data.map(({ title, id }, index) => (
-                <tr className="product-table__body" key={id}>
-                  <td>{index + 1}</td>
-                  <td>{title}</td>
-                  <td>
-                    <button
-                      className="product-table__btn edit"
-                      onClick={() => {
-                        setCategories({ ...categories, editId: id });
-                        setTitle(title);
-                        inputRef.current.focus();
-                      }}
-                    >
-                      <AiFillEdit />
-                    </button>
-                    <button
-                      className="product-table__btn delete"
-                      onClick={() => deleteCategoryHandler(id)}
-                    >
-                      <AiFillDelete />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {categories.data
+                ? categories.data.map(({ title, id }, index) => (
+                    <tr className="product-table__body" key={id}>
+                      <td>{index + 1}</td>
+                      <td>{title}</td>
+                      <td>
+                        <button
+                          className="product-table__btn edit"
+                          onClick={() => {
+                            setCategories({ ...categories, editId: id });
+                            setTitle(title);
+                            inputRef.current.focus();
+                          }}
+                        >
+                          <AiFillEdit />
+                        </button>
+                        <button
+                          className="product-table__btn delete"
+                          onClick={() => deleteCategoryHandler(id)}
+                        >
+                          <AiFillDelete />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                : "no"}
             </tbody>
           </table>
         </div>
