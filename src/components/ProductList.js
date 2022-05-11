@@ -3,7 +3,7 @@ import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import SearchProducts from "./SearchProducts";
 
 const ProductList = () => {
-  const products = useProduct().products;
+  const products = useProduct().data;
   const productDispatch = useProductDispatcher();
 
   const productChangesHandler = (e, id) => {

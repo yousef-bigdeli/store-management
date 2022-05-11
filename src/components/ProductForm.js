@@ -46,7 +46,7 @@ const ProductForm = () => {
     e.preventDefault();
     const action = productEditId
       ? { type: "editProduct", data: { ...product, id: productEditId } }
-      : { type: "setProduct", data: { ...product } };
+      : { type: "addProduct", data: { ...product } };
     productDispatch(action);
     setProduct(initialProduct);
     nameInputRef.current.focus();

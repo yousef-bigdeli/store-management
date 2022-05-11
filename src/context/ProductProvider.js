@@ -1,37 +1,45 @@
-import { createContext, useContext, useReducer } from "react";
-import {
-  getAllProducts,
-  setNewProduct,
-  deleteProduct,
-  updateProduct,
-} from "../services/ProductActions";
+import { createContext, useContext, useEffect, useReducer } from "react";
 
+let isSearch = false; // To prevent store in localstorage when searching
 const initialState = {
-  products: getAllProducts(),
+  data: [],
   editId: 0,
 };
-
 const ProductContext = createContext();
 const ProductContextDispatcher = createContext();
+const getAllData = () => {
+  return localStorage.getItem("products")
+    ? JSON.parse(localStorage.getItem("products"))
+    : [];
+};
 
 const reducer = (state, { type, data }) => {
+  isSearch = false;
   switch (type) {
-    case "setProduct": {
+    case "updateStateValue": {
+      return { data, editId: 0 };
+    }
+
+    case "addProduct": {
       const newId =
-        state.products.reduce(
+        state.data.reduce(
           (maxId, item) => (maxId > item.id ? maxId : item.id),
           0
         ) + 1;
-      setNewProduct([
-        ...state.products,
-        { id: newId, ...data, category: data.category.value },
-      ]);
-      return { ...state, products: getAllProducts() };
+      return {
+        data: [
+          ...state.data,
+          { id: newId, ...data, category: data.category.value },
+        ],
+        editId: 0,
+      };
     }
 
     case "deleteProduct": {
-      deleteProduct(data.id);
-      return { ...state, products: getAllProducts() };
+      return {
+        data: state.data.filter((item) => item.id !== data.id),
+        editId: 0,
+      };
     }
 
     case "setEditId": {
@@ -40,14 +48,21 @@ const reducer = (state, { type, data }) => {
     }
 
     case "editProduct": {
-      updateProduct({ ...data, category: data.category.value });
-      return { products: getAllProducts(), editId: 0 };
+      return {
+        data: state.data.map((item) =>
+          item.id === data.id
+            ? { ...data, category: data.category.value }
+            : item
+        ),
+        editId: 0,
+      };
     }
 
     case "search": {
+      isSearch = true;
       return {
         ...state,
-        products: getAllProducts().filter((item) =>
+        data: getAllData().filter((item) =>
           item.name.toLowerCase().includes(data.title.toLowerCase())
         ),
       };
@@ -59,10 +74,20 @@ const reducer = (state, { type, data }) => {
 };
 
 const ProductProvider = ({ children }) => {
-  const [product, dispatcher] = useReducer(reducer, initialState);
+  const [products, dispatcher] = useReducer(reducer, initialState);
+
+  // Read From localStorage
+  useEffect(() => {
+    dispatcher({ type: "updateStateValue", data: getAllData() });
+  }, []);
+  // Write to localstorage
+  useEffect(() => {
+    if (!isSearch)
+      localStorage.setItem("products", JSON.stringify(products.data));
+  }, [products.data]);
 
   return (
-    <ProductContext.Provider value={product}>
+    <ProductContext.Provider value={products}>
       <ProductContextDispatcher.Provider value={dispatcher}>
         {children}
       </ProductContextDispatcher.Provider>
