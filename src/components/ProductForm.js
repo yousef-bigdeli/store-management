@@ -3,7 +3,6 @@ import Select from "react-select";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CategoryForm from "./CategoryForm/CategoryForm";
 import { useProduct, useProductDispatcher } from "../context/ProductProvider";
-import { getProductById } from "../services/ProductActions";
 
 const initialProduct = {
   name: "",
@@ -16,6 +15,12 @@ const getAllCategoryOptions = () => {
     : [];
 
   return categories.map(({ title }) => ({ value: title, label: title }));
+};
+const getProductById = (id) => {
+  const data = localStorage.getItem("products")
+    ? JSON.parse(localStorage.getItem("products"))
+    : [];
+  return data.find((item) => item.id === id);
 };
 
 const ProductForm = () => {
