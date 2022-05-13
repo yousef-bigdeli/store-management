@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { AiFillEdit, AiFillDelete, AiOutlineClose } from "react-icons/ai";
+import {
+  addNewCategory,
+  getCategories,
+  updateCategory,
+  deleteCategory,
+} from "../../services/categoryActions";
 import "./CategoryForm.css";
 
 const CategoryForm = ({ isShowModal, showModalHandler }) => {
@@ -14,43 +20,49 @@ const CategoryForm = ({ isShowModal, showModalHandler }) => {
   const formSubmitHandler = (e) => {
     e.preventDefault();
     if (categories.editId) {
-      const editedData = categories.data.map((item) =>
-        item.id === categories.editId ? { ...item, title } : item
-      );
-      setCategories({ editId: 0, data: editedData });
+      updateCategory(categories.editId, { title })
+        .then(({ data }) =>
+          setCategories({
+            editId: 0,
+            data: categories.data.map((item) =>
+              item.id === data.id ? data : item
+            ),
+          })
+        )
+        .catch((err) => console.log(err));
     } else {
       if (title) {
-        const id =
-          categories.data.reduce(
-            (maxId, item) => (maxId > item.id ? maxId : item.id),
-            0
-          ) + 1;
-        setCategories({
-          editId: 0,
-          data: [...categories.data, { id, title }],
-        });
+        addNewCategory({ title })
+          .then(({ data }) =>
+            setCategories({
+              editId: 0,
+              data: [...categories.data, data],
+            })
+          )
+          .catch((err) => console.log(err));
       }
     }
     setTitle("");
   };
+
   // Delete item handler
   const deleteCategoryHandler = (id) => {
-    const newData = categories.data.filter((item) => item.id !== id);
-    setCategories({ editId: 0, data: newData });
+    deleteCategory(id)
+      .then(() =>
+        setCategories({
+          editId: 0,
+          data: categories.data.filter((item) => item.id !== id),
+        })
+      )
+      .catch((err) => console.log(err));
   };
 
-  // Reading from local storage
+  // Reading all from DB
   useEffect(() => {
-    const localData = localStorage.getItem("categories")
-      ? JSON.parse(localStorage.getItem("categories"))
-      : [];
-    setCategories({ data: localData, editId: 0 });
+    getCategories()
+      .then(({ data }) => setCategories({ data, editId: 0 }))
+      .catch((err) => console.log(err));
   }, []);
-  // Writing on localstorage
-  useEffect(() => {
-    localStorage.setItem("categories", JSON.stringify(categories.data));
-  }, [categories]);
-
 
   // When user press ESC key, modal hide
   const keyDownHandler = (e) => {
