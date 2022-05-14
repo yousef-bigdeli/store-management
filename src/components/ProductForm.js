@@ -3,18 +3,12 @@ import Select from "react-select";
 import { AiFillPlusCircle } from "react-icons/ai";
 import CategoryForm from "./CategoryForm/CategoryForm";
 import { useProduct, useProductDispatcher } from "../context/ProductProvider";
+import { getCategories } from "../services/categoryActions";
 
 const initialProduct = {
   name: "",
   quantity: 0,
   category: { value: "", label: "" },
-};
-const getAllCategoryOptions = () => {
-  const categories = localStorage.getItem("categories")
-    ? JSON.parse(localStorage.getItem("categories"))
-    : [];
-
-  return categories.map(({ title }) => ({ value: title, label: title }));
 };
 const getProductById = (id) => {
   const data = localStorage.getItem("products")
@@ -26,7 +20,7 @@ const getProductById = (id) => {
 const ProductForm = () => {
   const [product, setProduct] = useState(initialProduct);
   const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
-  const [options, setOptions] = useState(getAllCategoryOptions()); // Get From localstorage
+  const [options, setOptions] = useState(null); // Get From localstorage
   const productEditId = useProduct().editId;
   const productDispatch = useProductDispatcher();
   const nameInputRef = useRef();
@@ -44,7 +38,6 @@ const ProductForm = () => {
 
   const showModalHandler = () => {
     setIsShowModal((prevState) => !prevState);
-    setOptions(getAllCategoryOptions());
   };
 
   const formSubmitHandler = (e) => {
@@ -56,6 +49,17 @@ const ProductForm = () => {
     setProduct(initialProduct);
     nameInputRef.current.focus();
   };
+
+  // Get all categories from DB
+  useEffect(() => {
+    getCategories()
+      .then(({ data }) =>
+        setOptions(
+          data.map((item) => ({ value: item.title, label: item.title }))
+        )
+      )
+      .catch((err) => console.log(err));
+  }, [isShowModal]);
 
   useEffect(() => {
     if (productEditId > 0) {
