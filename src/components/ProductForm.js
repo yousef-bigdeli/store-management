@@ -4,23 +4,18 @@ import { AiFillPlusCircle } from "react-icons/ai";
 import CategoryForm from "./CategoryForm/CategoryForm";
 import { useProduct, useProductDispatcher } from "../context/ProductProvider";
 import { getCategories } from "../services/categoryActions";
+import { getProductById } from "../services/productActions";
 
 const initialProduct = {
   name: "",
   quantity: 0,
   category: { value: "", label: "" },
 };
-const getProductById = (id) => {
-  const data = localStorage.getItem("products")
-    ? JSON.parse(localStorage.getItem("products"))
-    : [];
-  return data.find((item) => item.id === id);
-};
 
 const ProductForm = () => {
   const [product, setProduct] = useState(initialProduct);
   const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
-  const [options, setOptions] = useState(null); // Get From localstorage
+  const [options, setOptions] = useState(null);
   const productEditId = useProduct().editId;
   const productDispatch = useProductDispatcher();
   const nameInputRef = useRef();
@@ -63,12 +58,16 @@ const ProductForm = () => {
 
   useEffect(() => {
     if (productEditId > 0) {
-      const { name, quantity, category } = getProductById(productEditId);
-      setProduct({
-        name: name,
-        quantity: quantity,
-        category: { value: category, label: category },
-      });
+      getProductById(productEditId)
+        .then(({ data }) => {
+          const { name, quantity, category } = data;
+          setProduct({
+            name: name,
+            quantity: quantity,
+            category: { value: category, label: category },
+          });
+        })
+        .catch((err) => console.log(err));
     }
   }, [productEditId]);
 

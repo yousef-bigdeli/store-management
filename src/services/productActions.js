@@ -10,7 +10,11 @@ const updateProduct = (id, data) => {
   return http.put(`./products/${id}`, data);
 };
 const deleteProduct = (id) => {
-  return http.put(`./products/${id}`);
+  return http.delete(`./products/${id}`);
 };
 
-export { getProducts, addProduct, updateProduct, deleteProduct };
+const getProductById = (id) => {
+  return http.get(`/products/${id}`)
+}
+
+export { getProducts, addProduct, updateProduct, deleteProduct, getProductById };
