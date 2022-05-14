@@ -1,90 +1,102 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import {
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+} from "../services/productActions";
 
-let isSearch = false; // To prevent store in localstorage when searching
-const initialState = {
-  data: [],
-  editId: 0,
-};
 const ProductContext = createContext();
 const ProductContextDispatcher = createContext();
-const getAllData = () => {
-  return localStorage.getItem("products")
-    ? JSON.parse(localStorage.getItem("products"))
-    : [];
-};
-
-const reducer = (state, { type, data }) => {
-  isSearch = false;
-  switch (type) {
-    case "updateStateValue": {
-      return { data, editId: 0 };
-    }
-
-    case "addProduct": {
-      const newId =
-        state.data.reduce(
-          (maxId, item) => (maxId > item.id ? maxId : item.id),
-          0
-        ) + 1;
-      return {
-        data: [
-          ...state.data,
-          { id: newId, ...data, category: data.category.value },
-        ],
-        editId: 0,
-      };
-    }
-
-    case "deleteProduct": {
-      return {
-        data: state.data.filter((item) => item.id !== data.id),
-        editId: 0,
-      };
-    }
-
-    case "setEditId": {
-      // To put an item into the product form when the user wants to edit it (set product id in the state)
-      return { ...state, editId: data.id };
-    }
-
-    case "editProduct": {
-      return {
-        data: state.data.map((item) =>
-          item.id === data.id
-            ? { ...data, category: data.category.value }
-            : item
-        ),
-        editId: 0,
-      };
-    }
-
-    case "search": {
-      isSearch = true;
-      return {
-        ...state,
-        data: getAllData().filter((item) =>
-          item.name.toLowerCase().includes(data.title.toLowerCase())
-        ),
-      };
-    }
-
-    default:
-      return state;
-  }
-};
 
 const ProductProvider = ({ children }) => {
-  const [products, dispatcher] = useReducer(reducer, initialState);
+  const [products, setProducts] = useState({
+    data: [],
+    editId: 0,
+  });
+  const [allProducts, setAllProducts] = useState([]); // Use for search
 
+  const dispatcher = ({ type, data }) => {
+    switch (type) {
+      case "addProduct": {
+        addProduct({ ...data, category: data.category.value })
+          .then(({ data }) => {
+            setProducts((prevState) => ({
+              editId: 0,
+              data: [...prevState.data, data],
+            }));
+            setAllProducts([...products.data, data]);
+          })
+          .catch((err) => console.log(err));
+        break;
+      }
+
+      case "deleteProduct": {
+        deleteProduct(data.id)
+          .then(() => {
+            setProducts((prevState) => ({
+              editId: 0,
+              data: prevState.data.filter((item) => item.id !== data.id),
+            }));
+            setAllProducts(products.data.filter((item) => item.id !== data.id));
+          })
+          .catch((err) => console.log(err));
+        break;
+      }
+
+      case "setEditId": {
+        // To put an item into the product form when the user wants to edit it (set product id in the state)
+        setProducts((prevState) => ({ ...prevState, editId: data.id }));
+        break;
+      }
+
+      case "editProduct": {
+        const { name, quantity, category, id } = data;
+        updateProduct(products.editId, {
+          name,
+          quantity,
+          category: category.value,
+        })
+          .then(({ data }) => {
+            setProducts((prevState) => ({
+              editId: 0,
+              data: prevState.data.map((item) =>
+                item.id === id ? data : item
+              ),
+            }));
+            setAllProducts(
+              products.data.map((item) => (item.id === id ? data : item))
+            );
+          })
+          .catch((err) => console.log(err));
+        break;
+      }
+
+      case "search": {
+        const { title: searchValue } = data;
+        setProducts({
+          editId: 0,
+          data: allProducts.filter((item) =>
+            item.name.toLowerCase().includes(searchValue.toLowerCase())
+          ),
+        });
+        break;
+      }
+
+      default:
+        return products;
+    }
+  };
+  
   // Read From localStorage
   useEffect(() => {
-    dispatcher({ type: "updateStateValue", data: getAllData() });
+    getProducts()
+      .then(({ data }) => {
+        setProducts({ editId: 0, data });
+        setAllProducts(data);
+      })
+      .catch((err) => console.log(err));
   }, []);
-  // Write to localstorage
-  useEffect(() => {
-    if (!isSearch)
-      localStorage.setItem("products", JSON.stringify(products.data));
-  }, [products.data]);
 
   return (
     <ProductContext.Provider value={products}>
