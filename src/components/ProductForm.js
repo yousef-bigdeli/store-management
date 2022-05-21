@@ -57,8 +57,14 @@ const ProductForm = () => {
         formik.setSubmitting(false);
         setEditValues(null);
         formik.resetForm();
+        nameInputRef.current.focus();
       }
     });
+  };
+
+  const cancelEditHandler = () => {
+    productDispatch({ type: "setEditId", data: { id: 0 } });
+    setEditValues(null);
   };
 
   // Get all categories from DB
@@ -92,15 +98,13 @@ const ProductForm = () => {
           id="name"
           name="name"
           className="form-input"
-          onChange={formik.handleChange}
-          value={formik.values.name}
-          onBlur={formik.handleBlur}
+          {...formik.getFieldProps("name")}
           ref={nameInputRef}
         />
         {formik.touched.name && formik.errors.name && (
           <div className="field-error">{formik.errors.name}</div>
         )}
-        <label htmlFor="cat">category</label>
+        <label>category</label>
         <div className="category">
           <Select
             value={selectValueHandler(options, formik.values.category)}
@@ -111,7 +115,6 @@ const ProductForm = () => {
               formik.setTouched({ ...formik.touched, category: true })
             }
             options={options}
-            id="cat"
             className="category__select"
           />
           {/* Button for show modal */}
@@ -132,9 +135,7 @@ const ProductForm = () => {
           id="quantity"
           name="quantity"
           className="form-input"
-          onChange={formik.handleChange}
-          value={formik.values.quantity}
-          onBlur={formik.handleBlur}
+          {...formik.getFieldProps("quantity")}
         />
         {formik.touched.quantity && formik.errors.quantity && (
           <div className="field-error">{formik.errors.quantity}</div>
@@ -146,10 +147,7 @@ const ProductForm = () => {
           <button
             type="button"
             className="cancel-btn"
-            onClick={() => {
-              productDispatch({ type: "setEditId", data: { id: 0 } });
-              setEditValues(null);
-            }}
+            onClick={cancelEditHandler}
             style={{ width: "90%", marginTop: "8px" }}
           >
             Cancel
