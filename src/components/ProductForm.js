@@ -5,44 +5,41 @@ import CategoryForm from "./CategoryForm/CategoryForm";
 import { useProduct, useProductDispatcher } from "../context/ProductProvider";
 import { getCategories } from "../services/categoryActions";
 import { getProductById } from "../services/productActions";
+import { useFormik } from "formik";
 
-const initialProduct = {
+const initialValues = {
   name: "",
   quantity: 0,
-  category: { value: "", label: "" },
+  category: "",
+};
+
+const onSubmit = (values) => {
+  // const action = productEditId
+  //   ? { type: "editProduct", data: { ...product, id: productEditId } }
+  //   : { type: "addProduct", data: { ...product } };
+  // productDispatch(action);
+  // nameInputRef.current.focus();
+  console.log(values);
 };
 
 const ProductForm = () => {
-  const [product, setProduct] = useState(initialProduct);
+  const formik = useFormik({
+    initialValues,
+    onSubmit,
+  });
   const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
   const [options, setOptions] = useState(null);
   const productEditId = useProduct().editId;
   const productDispatch = useProductDispatcher();
   const nameInputRef = useRef();
 
-  const changeInputHandler = (e) => {
-    setProduct((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const changeSelectHandler = (selectedValue) => {
-    setProduct({ ...product, category: selectedValue });
-  };
-
   const showModalHandler = () => {
     setIsShowModal((prevState) => !prevState);
   };
 
-  const formSubmitHandler = (e) => {
-    e.preventDefault();
-    const action = productEditId
-      ? { type: "editProduct", data: { ...product, id: productEditId } }
-      : { type: "addProduct", data: { ...product } };
-    productDispatch(action);
-    setProduct(initialProduct);
-    nameInputRef.current.focus();
+  const selectValueHandler = (options, value) => {
+    if (options) return options.find((item) => item.value === value);
+    return null;
   };
 
   // Get all categories from DB
@@ -61,11 +58,6 @@ const ProductForm = () => {
       getProductById(productEditId)
         .then(({ data }) => {
           const { name, quantity, category } = data;
-          setProduct({
-            name: name,
-            quantity: quantity,
-            category: { value: category, label: category },
-          });
         })
         .catch((err) => console.log(err));
     }
@@ -74,22 +66,24 @@ const ProductForm = () => {
   return (
     <section className="flex-column">
       <h2>Add new product</h2>
-      <form className="product-form" onSubmit={formSubmitHandler}>
+      <form className="product-form" onSubmit={formik.handleSubmit}>
         <label htmlFor="name">Name</label>
         <input
           type="text"
           id="name"
           name="name"
           className="form-input"
-          onChange={(e) => changeInputHandler(e)}
-          value={product.name}
+          onChange={formik.handleChange}
+          value={formik.values.name}
           ref={nameInputRef}
         />
         <label htmlFor="cat">category</label>
         <div className="category">
           <Select
-            value={product.category}
-            onChange={changeSelectHandler}
+            value={selectValueHandler(options, formik.values.category)}
+            onChange={(selectedOption) =>
+              formik.setFieldValue("category", selectedOption.value)
+            }
             options={options}
             id="cat"
             className="category__select"
@@ -109,8 +103,8 @@ const ProductForm = () => {
           id="quantity"
           name="quantity"
           className="form-input"
-          onChange={(e) => changeInputHandler(e)}
-          value={product.quantity}
+          onChange={formik.handleChange}
+          value={formik.values.quantity}
         />
         <button type="submit" className="submit-btn">
           {productEditId ? "Update prodcut" : "Add product"}
@@ -120,7 +114,6 @@ const ProductForm = () => {
             type="button"
             className="cancel-btn"
             onClick={() => {
-              setProduct(initialProduct);
               productDispatch({ type: "setEditId", data: { id: 0 } });
             }}
             style={{ width: "90%", marginTop: "8px" }}
