@@ -52,11 +52,7 @@ const ProductProvider = ({ children }) => {
 
       case "editProduct": {
         const { name, quantity, category, id } = data;
-        updateProduct(products.editId, {
-          name,
-          quantity,
-          category: category.value,
-        })
+        updateProduct(products.editId, { name, quantity, category })
           .then(({ data }) => {
             setProducts((prevState) => ({
               editId: 0,

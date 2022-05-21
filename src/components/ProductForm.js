@@ -14,8 +14,10 @@ const initialValues = {
 };
 
 const ProductForm = () => {
+  const [editValues, setEditValues] = useState(null);
   const formik = useFormik({
-    initialValues,
+    initialValues: editValues || initialValues,
+    enableReinitialize: true,
   });
   const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
   const [options, setOptions] = useState(null);
@@ -38,6 +40,7 @@ const ProductForm = () => {
       ? { type: "editProduct", data: { ...formik.values, id: productEditId } }
       : { type: "addProduct", data: { ...formik.values } };
     productDispatch(action);
+    setEditValues(null);
     formik.resetForm();
   };
 
@@ -56,7 +59,7 @@ const ProductForm = () => {
     if (productEditId > 0) {
       getProductById(productEditId)
         .then(({ data }) => {
-          const { name, quantity, category } = data;
+          setEditValues(data);
         })
         .catch((err) => console.log(err));
     }
@@ -114,6 +117,7 @@ const ProductForm = () => {
             className="cancel-btn"
             onClick={() => {
               productDispatch({ type: "setEditId", data: { id: 0 } });
+              setEditValues(null);
             }}
             style={{ width: "90%", marginTop: "8px" }}
           >
