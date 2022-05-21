@@ -13,33 +13,32 @@ const initialValues = {
   category: "",
 };
 
-const onSubmit = (values) => {
-  // const action = productEditId
-  //   ? { type: "editProduct", data: { ...product, id: productEditId } }
-  //   : { type: "addProduct", data: { ...product } };
-  // productDispatch(action);
-  // nameInputRef.current.focus();
-  console.log(values);
-};
-
 const ProductForm = () => {
   const formik = useFormik({
     initialValues,
-    onSubmit,
   });
   const [isShowModal, setIsShowModal] = useState(false); // Show category form in a modal window
   const [options, setOptions] = useState(null);
   const productEditId = useProduct().editId;
-  const productDispatch = useProductDispatcher();
   const nameInputRef = useRef();
-
+  const productDispatch = useProductDispatcher();
   const showModalHandler = () => {
     setIsShowModal((prevState) => !prevState);
   };
 
   const selectValueHandler = (options, value) => {
-    if (options) return options.find((item) => item.value === value);
-    return null;
+    return options && value
+      ? options.find((item) => item.value === value)
+      : null;
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    const action = productEditId
+      ? { type: "editProduct", data: { ...formik.values, id: productEditId } }
+      : { type: "addProduct", data: { ...formik.values } };
+    productDispatch(action);
+    formik.resetForm();
   };
 
   // Get all categories from DB
@@ -66,7 +65,7 @@ const ProductForm = () => {
   return (
     <section className="flex-column">
       <h2>Add new product</h2>
-      <form className="product-form" onSubmit={formik.handleSubmit}>
+      <form className="product-form" onSubmit={(e) => submitHandler(e)}>
         <label htmlFor="name">Name</label>
         <input
           type="text"

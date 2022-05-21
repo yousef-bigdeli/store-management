@@ -19,7 +19,7 @@ const ProductProvider = ({ children }) => {
   const dispatcher = ({ type, data }) => {
     switch (type) {
       case "addProduct": {
-        addProduct({ ...data, category: data.category.value })
+        addProduct({ ...data })
           .then(({ data }) => {
             setProducts((prevState) => ({
               editId: 0,
@@ -87,7 +87,7 @@ const ProductProvider = ({ children }) => {
         return products;
     }
   };
-  
+
   // Read From localStorage
   useEffect(() => {
     getProducts()
