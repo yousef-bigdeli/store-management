@@ -120,6 +120,10 @@ label {
   border-radius: 4px;
   cursor: pointer;
 }
+.submit-btn:disabled{
+  background: #4f46e566;
+  cursor: not-allowed;
+}
 
 .search-input{
   width: 100%;
@@ -137,4 +141,10 @@ label {
   padding: 8px;
   color: #797979;
   cursor: pointer;
+}
+
+.field-error{
+  color: #f00;
+  font-size: .8rem;
+  margin-bottom: 8px
 }
