@@ -16,7 +16,8 @@ const ProductProvider = ({ children }) => {
   });
   const [allProducts, setAllProducts] = useState([]); // Use for search
 
-  const dispatcher = ({ type, data }) => {
+  // A custom Middleware for async actions
+  const asyncDispatcher = ({ type, data }) => {
     switch (type) {
       case "addProduct": {
         addProduct({ ...data })
@@ -96,7 +97,7 @@ const ProductProvider = ({ children }) => {
 
   return (
     <ProductContext.Provider value={products}>
-      <ProductContextDispatcher.Provider value={dispatcher}>
+      <ProductContextDispatcher.Provider value={asyncDispatcher}>
         {children}
       </ProductContextDispatcher.Provider>
     </ProductContext.Provider>
